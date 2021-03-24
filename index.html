@@ -3,8 +3,7 @@
 <!-- FROM: https://data.gov.tw/dataset/9018 -->
 
 <head>
-    <!-- <script src="d3.v6.js"></script> -->
-    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="d3.v3.min.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>HW1 109971014 林翰陽</title>
     <style>
@@ -67,6 +66,14 @@
             x1.domain(classNames).rangeRoundBands([0, x0.rangeBand()]);
             y.domain([0, d3.max(data, function (year) { return d3.max(year.values, function (d) { return d.value; }); })]);
 
+            svg.append("text")
+                .attr("x", (width / 2) + 150)
+                .attr("y", 10)
+                .style("text-anchor", "middle")
+                .style("font-size", "24px")
+                .style("text-decoration", "underline")
+                .text("歷年酒駕肇事受傷及死亡人數統計表");
+
             svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
@@ -82,7 +89,7 @@
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .style('font-weight', 'bold')
-                .text("Value");
+                .text("死亡/受傷人數");
 
             svg.select('.y').transition().duration(500).delay(1300).style('opacity', '1');
 
@@ -140,6 +147,13 @@
         });
 
     </script>
+    <div>
+        <h1 style="font-size:12px;color:darkgray">A1類：造成人員當場或24小時內死亡之交通事故。 A2類：造成人員受傷或超過24時死亡之交通事故。</h1>
+        <h3 style="font-size:14px">
+            隨著台灣政府加強酒駕零容忍的政策之下，透過年份的逐漸增加可以觀察到，近年來的酒駕傷亡人數比起前幾年有明顯的減少；<br>但從105年到108年的死亡人數都是相當接近，表示還是有一部份的人因為酒駕的因素死亡，酒駕因為在台灣還是輕罰的刑責之下，完全無法有效嚇阻。
+        </h3>
+    </div>
+    <div><a href="https://data.gov.tw/dataset/9018">資料來源</a></div>
 </body>
 
 </html>
