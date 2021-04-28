@@ -1,157 +1,430 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<style>
-.svgRect {
-    stroke: none;
-    fill: rgb(20, 79, 134);
-}
-</style>
+    <meta charset="utf-8">
+    <style>
+        .svgRect {
+            stroke: none;
+            fill: rgb(20, 79, 134);
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 </head>
+
 <body>
-<button id="bt101" onclick="drawChart(101)">101年</button>
-<button id="bt102">102年</button>
-<button id="bt103">103年</button>
-<button id="bt104">104年</button>
-<button id="bt105">105年</button>
-<button id="bt106">106年</button>
-<button id="bt107">107年</button>
-<button id="bt108">108年</button>
-<button id="bt109">109年</button>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous">
+    </script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .custom {
+            width: 100px !important;
+        }
+    </style>
 
-<svg id="chart" viewBox="0 0 960 500"></svg>
-<script src="https://d3js.org/d3.v6.min.js"></script>
-<script>
-        console.log("SS");
-        var dataset = {};
-        // d3.csv("dataset.csv", function (data) {
-        //     dataset[data.民國年別] = data;
-        //     console.log(data);
-        // });
-        const ddd = d3.csv("dataset.csv").then(function(data){return data;});
-        
-        console.log("TT");
-        console.log(ddd);
-</script>
-<script>
-let data = [
-    {name: "Alfred", value: 65},
-    {name: "Bernard", value: 35},
-    {name: "Christine1", value: 75},
-    {name: "Christine2", value: 75},
-    {name: "Christine3", value: 75},
-    {name: "Christine4", value: 75},
-    {name: "Christine5", value: 75},
-    {name: "Christine6", value: 75},
-    {name: "Christine7", value: 75},
-    {name: "Christine8", value: 75},
-    {name: "Christine9", value: 75},
-    {name: "Christine11", value: 75},
-    {name: "Christine12", value: 75}
-];
-let data2 = [
-    {name: "Alfred", value: 25},
-    {name: "Bernard", value: 95},
-    {name: "Christine", value: 65},
-    {name: "Daniella", value: 40},
-    {name: "Eric", value: 50}
-];
-let margin = {top: 20, right: 20, bottom: 40, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-let chart = d3.select("#chart")
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-// Add scales
-let xScale = d3.scaleBand()
-    .domain(data.map(function(d) { return d.name; }))
-    .rangeRound([0, width])
-    .padding(0.1);
-let yScale = d3.scaleLinear()
-    .domain([0, 100])
-    .rangeRound([height, 0]);
-// Add x-axis
-chart.append("g")
-    .attr("class", "axis axis-x")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(xScale));
-// Add y-axis
-chart.append("g")
-    .attr("class", "axis axis-y")
-    .call(d3.axisLeft(yScale).ticks(10));
-    
-//Sample enter, update and exit loop
-function drawChart(year) {
-    // console.log(dataset[year]);
+    <div class="container">
+        <center><h1>中華民國歷年戶政調查數據</h1></center>
+        <div class="row">
+            <div class="col-md"><button id="b1" class="btn btn-secondary custom">戶數</button></div>
+            <div class="col-md"><button id="b2" class="btn btn-secondary custom">人口數</button></div>
+            <div class="col-md"><button id="b3" class="btn btn-secondary custom">戶量</button></div>
+            <div class="col-md"><button id="b4" class="btn btn-secondary custom">人口密度</button></div>
+            <div class="col-md"><button id="b5" class="btn btn-secondary custom">出生人數</button></div>
+            <div class="col-md"><button id="b6" class="btn btn-secondary custom">死亡人數</button></div>
+            <div class="col-md"><button id="b7" class="btn btn-secondary custom">結婚對數</button></div>
+            <div class="col-md"><button id="b8" class="btn btn-secondary custom">離婚對數</button></div>            
+        </div>
 
-    var dataSet = [];
+        <svg id="chart" viewBox="0 0 960 500"></svg>
+
+        <p class="text-md-start">資料來源: <a href="https://www.ris.gov.tw/app/portal/346">中華民國內政部戶政司全球資訊網</a></p>
+        <p class="text-md-start">去年台灣的死亡人數首次超過新生兒數，出現「生死交叉」，目前根據內政部最新人口統計，今年第一季出生數為3萬4917人、死亡人數為4萬7626人，較同期來說，出生數減少了5497人，死亡人數則比出生人數多出1萬2709人，持續呈現人口負成長。</p>
+        <p class="text-md-start">結婚對數逐年下降，離婚對數則變化不大。</p>
+        <p class="text-md-start">* 選擇使用長條圖目的是將相同數據放一起做趨勢比對更加容易。</p>
+        <p class="text-md-start">* 採用的經驗法則是 Principle of proximity (臨近原則)，將相同的資料放一起做比對更容易找出不同資料的差異性。</p>
+    </div>
 
 
-//xScale domain needs to change based on data set
-xScale.domain(dataSet.map(function(d) { return d.name; }));
-chart.select("g .axis-x")
-    .transition()
-    .duration(1000)
-    .call(d3.axisBottom(xScale));
+    <script>
+        let data = [
+            [{
+                name: '101',
+                value: '8186432'
+            }, {
+                name: '102',
+                value: '8286260'
+            }, {
+                name: '103',
+                value: '8382699'
+            }, {
+                name: '104',
+                value: '8468978'
+            }, {
+                name: '105',
+                value: '8561383'
+            }, {
+                name: '106',
+                value: '8649000'
+            }, {
+                name: '107',
+                value: '8734477'
+            }, {
+                name: '108',
+                value: '8832745'
+            }, {
+                name: '109',
+                value: '8933814'
+            }],
+            [{
+                    name: '101',
+                    value: '23315822'
+                }, {
+                    name: '102',
+                    value: '23373517'
+                }, {
+                    name: '103',
+                    value: '23433753'
+                }, {
+                    name: '104',
+                    value: '23492074'
+                }, {
+                    name: '105',
+                    value: '23539816'
+                }, {
+                    name: '106',
+                    value: '23571227'
+                }, {
+                    name: '107',
+                    value: '23588932'
+                }, {
+                    name: '108',
+                    value: '23603121'
+                },
+                {
+                    name: '109',
+                    value: '23561236'
+                }
+            ],
+            [{
+                name: '101',
+                value: '2.85'
+            }, {
+                name: '102',
+                value: '2.82'
+            }, {
+                name: '103',
+                value: '2.80'
+            }, {
+                name: '104',
+                value: '2.77'
+            }, {
+                name: '105',
+                value: '2.75'
+            }, {
+                name: '106',
+                value: '2.73'
+            }, {
+                name: '107',
+                value: '2.70'
+            }, {
+                name: '108',
+                value: '2.67'
+            }, {
+                name: '109',
+                value: '2.64'
+            }],
+            [{
+                name: '101',
+                value: '644.21'
+            }, {
+                name: '102',
+                value: '645.81'
+            }, {
+                name: '103',
+                value: '647.47'
+            }, {
+                name: '104',
+                value: '649.01'
+            }, {
+                name: '105',
+                value: '650.32'
+            }, {
+                name: '106',
+                value: '651.19'
+            }, {
+                name: '107',
+                value: '651.68'
+            }, {
+                name: '108',
+                value: '652.07'
+            }, {
+                name: '109',
+                value: '650.92'
+            }],
+            [{
+                    name: '101',
+                    value: '229481'
+                }, {
+                    name: '102',
+                    value: '199113'
+                }, {
+                    name: '103',
+                    value: '210383'
+                }, {
+                    name: '104',
+                    value: '213598'
+                }, {
+                    name: '105',
+                    value: '208440'
+                }, {
+                    name: '106',
+                    value: '193844'
+                }, {
+                    name: '107',
+                    value: '181601'
+                },
+                {
+                    name: '108',
+                    value: '177767'
+                }, {
+                    name: '109',
+                    value: '165249'
+                }
+            ],
+            [{
+                name: '101',
+                value: '154251'
+            }, {
+                name: '102',
+                value: '155908'
+            }, {
+                name: '103',
+                value: '163929'
+            }, {
+                name: '104',
+                value: '163858'
+            }, {
+                name: '105',
+                value: '172405'
+            }, {
+                name: '106',
+                value: '171242'
+            }, {
+                name: '107',
+                value: '172784'
+            }, {
+                name: '108',
+                value: '176296'
+            }, {
+                name: '109',
+                value: '173156'
+            }],
+            [{
+                name: '101',
+                value: '143384'
+            }, {
+                name: '102',
+                value: '147636'
+            }, {
+                name: '103',
+                value: '149287'
+            }, {
+                name: '104',
+                value: '154346'
+            }, {
+                name: '105',
+                value: '147861'
+            }, {
+                name: '106',
+                value: '138034'
+            }, {
+                name: '107',
+                value: '135403'
+            }, {
+                name: '108',
+                value: '134524'
+            }, {
+                name: '109',
+                value: '121702'
+            }],
+            [{
+                    name: '101',
+                    value: '55980'
+                }, {
+                    name: '102',
+                    value: '53604'
+                }, {
+                    name: '103',
+                    value: '53190'
+                }, {
+                    name: '104',
+                    value: '53459'
+                }, {
+                    name: '105',
+                    value: '53837'
+                }, {
+                    name: '106',
+                    value: '54412'
+                },
+                {
+                    name: '107',
+                    value: '54443'
+                }, {
+                    name: '108',
+                    value: '54473'
+                }, {
+                    name: '109',
+                    value: '51680'
+                }
+            ]
+        ];
 
-chart.selectAll("rect")
-    .data(dataSet)
-    .join(
-    enter => enter
-        .append("rect")
-        .attr("x", d => xScale(d.name))
-        .attr("y", d => yScale(d.value))
-        .attr("width", 0)
-        .attr("height", 0)
-        .attr("class", "svgRect")
-      .call(enter => enter.transition()
-        .duration(1000)
-        .attr("width", xScale.bandwidth())
-        .attr("height", d => height - yScale(d.value))
-       ),
-    update => update 
-      .call(update => update.transition()
-        .duration(1000)
-        .attr("x", d => xScale(d.name))
-        .attr("y", d => yScale(d.value))
-        .attr("width", xScale.bandwidth())
-        .attr("height", d => height - yScale(d.value))
-       ),
-    exit => exit
-      .call(exit => exit.transition()
-        .duration(1000)
-        .attr("width", 0)
-        .attr("height", 0)
-        .remove()
-       )
-    );
-}
-// d3.select("#bt1").on("click", function() {
-//     drawChart(data);
-// });
-// d3.select("#bt2").on("click", function() {
-//     drawChart(data2);
-// });
-// d3.select("#bt1").on("click", function() {
-//     drawChart(data);
-// });
-// d3.select("#bt2").on("click", function() {
-//     drawChart(data2);
-// });
-// d3.select("#bt1").on("click", function() {
-//     drawChart(data);
-// });
-// d3.select("#bt2").on("click", function() {
-//     drawChart(data2);
-// });
-// d3.select("#bt1").on("click", function() {
-//     drawChart(data);
-// });
-// d3.select("#bt2").on("click", function() {
-//     drawChart(data2);
-// });
-drawChart(109);
-</script>
+
+        let margin = {
+                top: 20,
+                right: 20,
+                bottom: 40,
+                left: 80
+            },
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+        let chart = d3.select("#chart")
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        // Add scales
+        let xScale = d3.scaleBand()
+            .domain(data.map(function (d) {
+                return d.name;
+            }))
+            .rangeRound([0, width])
+            .padding(0.1);
+
+        let yScale = d3.scaleLinear()
+            .domain([0, 25000000])
+            .rangeRound([height, 0]);
+
+        // Add x-axis
+        chart.append("g")
+            .attr("class", "axis axis-x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScale));
+
+        // Add y-axis
+        chart.append("g")
+            .attr("class", "axis axis-y")
+            .call(d3.axisLeft(yScale).ticks(10));
+
+        //Sample enter, update and exit loop
+        function drawChart(index) {
+            var dataSet = data[index];
+
+            var d_range = 100;
+            switch (index) {
+                case 0:
+                    d_range = 10000000;
+                    break;
+                case 1:
+                    d_range = 25000000;
+                    break;
+                case 2:
+                    d_range = 3;
+                    break;
+                case 3:
+                    d_range = 700;
+                    break;
+                case 4:
+                    d_range = 300000;
+                    break;
+                case 5:
+                    d_range = 200000;
+                    break;
+                case 6:
+                    d_range = 200000;
+                    break;
+                case 7:
+                    d_range = 60000;
+                    break;
+
+                default:
+                    d_range = 1000000;
+                    break;
+            }
+
+            yScale.domain([0, d_range]).rangeRound([height, 0]);
+
+            chart.select(".axis-y")
+                .call(d3.axisLeft(yScale).ticks(10));
+
+            //xScale domain needs to change based on data set
+            xScale.domain(dataSet.map(function (d) {
+                return d.name;
+            }));
+            chart.select("g .axis-x")
+                .transition()
+                .duration(1000)
+                .call(d3.axisBottom(xScale));
+
+            chart.selectAll("rect")
+                .data(dataSet)
+                .join(
+                    enter => enter
+                    .append("rect")
+                    .attr("x", d => xScale(d.name))
+                    .attr("y", d => yScale(d.value))
+                    .attr("width", 0)
+                    .attr("height", 0)
+                    .attr("class", "svgRect")
+                    .call(enter => enter.transition()
+                        .duration(1000)
+                        .attr("width", xScale.bandwidth())
+                        .attr("height", d => height - yScale(d.value))
+                    ),
+                    update => update
+                    .call(update => update.transition()
+                        .duration(1000)
+                        .attr("x", d => xScale(d.name))
+                        .attr("y", d => yScale(d.value))
+                        .attr("width", xScale.bandwidth())
+                        .attr("height", d => height - yScale(d.value))
+                    ),
+                    exit => exit
+                    .call(exit => exit.transition()
+                        .duration(1000)
+                        .attr("width", 0)
+                        .attr("height", 0)
+                        .remove()
+                    )
+                );
+        }
+        d3.select("#b1").on("click", function () {
+            drawChart(0);
+        });
+        d3.select("#b2").on("click", function () {
+            drawChart(1);
+        });
+        d3.select("#b3").on("click", function () {
+            drawChart(2);
+        });
+        d3.select("#b4").on("click", function () {
+            drawChart(3);
+        });
+        d3.select("#b5").on("click", function () {
+            drawChart(4);
+        });
+        d3.select("#b6").on("click", function () {
+            drawChart(5);
+        });
+        d3.select("#b7").on("click", function () {
+            drawChart(6);
+        });
+        d3.select("#b8").on("click", function () {
+            drawChart(7);
+        });
+
+        drawChart(1);
+    </script>
 </body>
+
 </html>
